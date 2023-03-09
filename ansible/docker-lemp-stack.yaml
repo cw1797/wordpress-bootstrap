@@ -1,6 +1,6 @@
 ---
 - name: Setup Docker with TLS encryption
-  hosts: otraw_ec2
+  hosts: docker.otraw
   user: "{{ username }}"
   become: true
   gather_facts: False
@@ -42,15 +42,15 @@
 
   - name: Copy script for securing the docker daemon with TLS
     ansible.builtin.copy:
-      src: secure-docker-daemon.sh
+      src: docker_tls_certs.sh
       dest: "/home/{{ username }}"
       owner: "{{ username }}"
       group: "{{ username }}"
       mode: '755'
 
-  - name: Pause playbook
+  - name: Execute script
     ansible.builtin.pause:
-      prompt: "ssh to the host and run the script - resume playbook once done"
+      prompt: "SSH to the remote host and execute the script to generate tls certs"
 
   - name: Change dir ownership of generated tls certs
     ansible.builtin.file:
@@ -58,17 +58,57 @@
       owner: root
       group: root
       recurse: yes
+    register: change_ownership_tls_dir
 
-  - name: Copy script for securing the docker daemon with TLS
+  - name: Overide docker service file with tls verification options enabled
     ansible.builtin.copy:
       src: override.conf
       dest: "/etc/systemd/system/docker.service.d/"
       owner: root
       group: root
       mode: '600'
+    register: override_docker_systemd
 
   - name: Restart Docker
     ansible.builtin.systemd:
       name: docker.service
       daemon_reload: true
       state: restarted
+    when: override_docker_systemd.changed
+
+  - name: Copy client certificates to local machine
+    ansible.builtin.fetch:
+      src: "{{ item }}"
+      dest: ~/.docker/
+      flat: yes
+    loop: #use with_items instead of loop if ansible version is <2.5
+      - "/home/{{ username }}/.docker/ca.pem"
+      - "/home/{{ username }}/.docker/cert.pem"
+      - "/home/{{ username }}/.docker/key.pem"
+    when: change_ownership_tls_dir.changed
+
+  # - name: Install bottle python package on version 0.11
+  #   ansible.builtin.pip:
+  #     name: "{{ item }}"
+  #     executable: /usr/bin/pip3
+  #     state: absent
+  #   loop:
+  #     - requests==2.28.2
+  #     - docker==6.0.1
+  #     - docker-compose==1.29.2
+  #     - PyYAML==5.4.1
+
+  - name: Create and start docker services (nginx, mysql and wordpress)
+    community.docker.docker_compose:
+      docker_host: https://docker.otraw:2376
+      ca_cert: "/Users/cheikh.white/.docker/ca.pem"
+      client_cert: "/Users/cheikh.white/.docker/cert.pem"
+      client_key: "/Users/cheikh.white/.docker/key.pem"
+      project_name: "otraw"
+      project_src: "../docker/wordpress/"
+      env_file: "../docker/wordpress/.env"
+      tls: true
+      validate_certs: true
+      state: present
+    delegate_to: localhost
+    become: true

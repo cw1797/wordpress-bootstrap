@@ -1,0 +1,25 @@
+import os
+import docker
+
+tls_config = docker.tls.TLSConfig(
+    client_cert=(os.environ['DOCKER_CLIENT_CERT'], os.environ['DOCKER_CLIENT_KEY']), 
+    ca_cert=os.environ['DOCKER_CA_CERT'], 
+    verify=True
+)
+
+remote_host_ip = "docker.otraw" # Replace with your hostname
+client = docker.DockerClient(
+    base_url='tcp://{}:2376'.format(remote_host_ip),
+    tls=tls_config
+)
+
+compose_file = 'docker-compose.yml'
+compose_project_name = 'my_project'
+
+compose_api = docker.api.build.ComposeAPI(
+    client=client,
+    project_name=compose_project_name,
+    version='3.8'
+)
+
+compose_api.up(detach=True, log=True)
