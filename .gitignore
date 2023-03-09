@@ -3,6 +3,7 @@
 *.tfstate.*
 
 # Ignore files that might contain sensitive information
+*.env
 *.tfvars
 *.tfplan
 .terraform

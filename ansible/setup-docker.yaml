@@ -1,0 +1,74 @@
+---
+- name: Setup Docker with TLS encryption
+  hosts: otraw_ec2
+  user: "{{ username }}"
+  become: true
+  gather_facts: False
+
+  tasks:
+  - name: Update yum packages
+    ansible.builtin.yum:
+      name: '*'
+      update_only: true
+      update_cache: true
+
+  - name: Install Docker
+    ansible.builtin.yum:
+      name: "docker-{{ docker_version }}"
+      state: present
+
+  - name: Enable and Start docker
+    ansible.builtin.systemd:
+      name: docker.service
+      state: started
+      enabled: true
+
+  - name: Add the user to the docker group
+    ansible.builtin.user:
+      name: "{{ username }}"
+      group: docker
+      append: yes
+
+  - name: Install docker-compose
+    ansible.builtin.uri:
+      url: "https://github.com/docker/compose/releases/download/{{docker_compose_version}}/docker-compose-linux-x86_64"
+      status_code:
+        - 200
+        - 304
+      owner: "{{ username }}"
+      group: "{{ username }}"
+      mode: 755
+      dest: /usr/local/bin/docker-compose
+
+  - name: Copy script for securing the docker daemon with TLS
+    ansible.builtin.copy:
+      src: secure-docker-daemon.sh
+      dest: "/home/{{ username }}"
+      owner: "{{ username }}"
+      group: "{{ username }}"
+      mode: '755'
+
+  - name: Pause playbook
+    ansible.builtin.pause:
+      prompt: "ssh to the host and run the script - resume playbook once done"
+
+  - name: Change dir ownership of generated tls certs
+    ansible.builtin.file:
+      path: "/home/{{ username }}/.docker"
+      owner: root
+      group: root
+      recurse: yes
+
+  - name: Copy script for securing the docker daemon with TLS
+    ansible.builtin.copy:
+      src: override.conf
+      dest: "/etc/systemd/system/docker.service.d/"
+      owner: root
+      group: root
+      mode: '600'
+
+  - name: Restart Docker
+    ansible.builtin.systemd:
+      name: docker.service
+      daemon_reload: true
+      state: restarted
