@@ -1,0 +1,4 @@
+---
+aws:
+  hosts:
+    otraw_ec2: #entry in /etc/hosts to map to IP

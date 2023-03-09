@@ -1,0 +1,36 @@
+---
+- name: Install docker and docker-compose on amazon linux ec2
+  hosts: otraw_ec2
+  user: ec2-user
+  become: yes
+  gather_facts: False
+
+  tasks:
+  - name: Update yum packages
+    ansible.builtin.yum:
+      name: '*'
+      update_only: true
+
+  - name: Install Docker
+    ansible.builtin.yum:
+      name: docker-20.10.17-1.amzn2.0.2
+      state: present
+
+  - name: Start Docker
+    ansible.builtin.service:
+      name: docker
+      state: started
+
+  - name: Add 'ec2 user' to 'docker' group
+    ansible.builtin.user:
+      name: ec2-user
+      group: docker
+      append: yes
+
+  - name: Install docker-compose
+    ansible.builtin.uri:
+      url: https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-linux-x86_64
+      owner: ec2-user
+      group: ec2-user
+      mode: 755
+      dest: /usr/local/bin/docker-compose
