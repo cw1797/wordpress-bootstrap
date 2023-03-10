@@ -109,6 +109,11 @@
       env_file: "../docker/wordpress/.env"
       tls: true
       validate_certs: true
+      # build: true
       state: present
     delegate_to: localhost
-    become: true
+    # become: true
+
+  - name: Tech debt - copy nginx conf to container
+    ansible.builtin.pause:
+      prompt: "Copy nginx.conf to /etc/nginx/conf.d into  wordpress container then run 'nginx -s reload' and restart the certbot container"
