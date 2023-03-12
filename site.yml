@@ -1,0 +1,17 @@
+---
+- name: Bootstrap SSL enabled Wordpress Website 
+  hosts: docker.otraw
+  user: "{{ username }}"
+  become: true
+  gather_facts: False
+
+  tasks:
+    - name: Deploy Docker with TLS
+      ansible.builtin.import_role:
+        name: deploy_docker
+      tags: deploy_docker
+
+    - name: Deploy Wordpress with LEMP stack
+      ansible.builtin.import_role:
+        name: deploy_lemp
+      tags: deploy_lemp

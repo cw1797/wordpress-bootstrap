@@ -1,0 +1,8 @@
+# The vars below such as local_user are not defined and need to be passed as extra vars in the ansible-plabook command using -e
+docker_host: "https://docker.otraw:2376"
+ca_cert: "/Users/{{ local_user }}/.docker/ca.pem"
+client_cert: "/Users/{{ local_user }}/.docker/cert.pem"
+client_key: "/Users/{{ local_user }}/.docker/key.pem"
+certbot_email: "{{ certbot_email }}"
+domain: "{{ domain }}"
+project_src: ./docker/otraw-app

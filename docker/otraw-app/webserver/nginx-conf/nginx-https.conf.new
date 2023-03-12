@@ -5,6 +5,9 @@ server {
 
         server_name otrawfitness www.otrawfitness;
 
+        # Set the maximum client body size to 10 MB for this server
+        client_max_body_size 10m;
+
         location ~ /.well-known/acme-challenge {
                 allow all;
                 root /var/www/html;
@@ -38,6 +41,9 @@ server {
         add_header Content-Security-Policy "default-src * data: 'unsafe-eval' 'unsafe-inline'" always;
         # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
         # enable strict transport security only if you understand the implications
+
+        # Set the maximum client body size to 10 MB for this server
+        client_max_body_size 10m;
 
         location / {
                 try_files $uri $uri/ /index.php$is_args$args;
