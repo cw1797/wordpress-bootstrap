@@ -32,7 +32,7 @@ Run a plan to view desired changes 'terraform plan -var-file=secrets.tfvars'
 
 Run terraform apply to provision the infra `terraform apply -var-file=secrets.tfvars`
 
-## Step 2 - Install Docker and configure with TLS
+### Step 2 - Install Docker and configure with TLS
 
-Run `ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_docker"`
+Execute the following command to configure docker with tls on the ec2 instance `ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_docker"`
 
