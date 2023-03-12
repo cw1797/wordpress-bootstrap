@@ -25,7 +25,7 @@ MYSQL_USER="msqluser"
 MYSQL_PASSWORD="mysqlpassword123"
 ```
 
-## Step 1 - Provision Terraform Resources
+## Step 1 - Provision AWS Resources
 
 Switch to the terraform dir `cd terraform`
 
