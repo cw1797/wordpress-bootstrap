@@ -25,7 +25,7 @@ MYSQL_USER="msqluser"
 MYSQL_PASSWORD="mysqlpassword123"
 ```
 
-### Step 1 - Provision Terraform Resources
+## Step 1 - Provision Terraform Resources
 
 Switch to the terraform dir `cd terraform`
 
@@ -37,12 +37,14 @@ Run a plan to view desired changes 'terraform plan -var-file=secrets.tfvars'
 
 Run terraform apply to provision the infra `terraform apply -var-file=secrets.tfvars`
 
-### Step 2 - Deploy Docker with TLS
+
+## Step 2 - Deploy Docker with TLS
 
 Run the following command to configure docker with tls on the ec2 instance. `ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_docker"` 
 Once run you will have the necessary certs on your local machine used to authenticate with docker in the following directory `~/.docker`
 
-### Step 3 - Deploy Wordpress with LEMP stack
+
+## Step 3 - Deploy Wordpress with LEMP stack
 
 Enure the following config files have your domain specified in them `docker/otraw-app/webserver/nginx-conf/nginx.conf` `docker/otraw-app/webserver/nginx-conf/nginx-https.conf.new`
 
