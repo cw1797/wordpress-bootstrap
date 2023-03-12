@@ -9,16 +9,16 @@ This repo is used to bootstrap a secure wordpress installation for the otraw-wea
 ### Pre-requisites
 tfwitch - Allows you to easily switch and install terrform versions `brew install tfswitch`
 
-secrets.tfvars - Contains the aws_region, aws_access_key and aws_secret_key shown below. Ensure this file is included in .gitignore.
-
-ansible - Needed to excute the playbooks on the remote host. This playbook is working with `ansible [core 2.14.3]`
-
-## Step 1 - Provisiong Infrastructure
+secrets.tfvars - Create in the root of the terraform dir. This is required to authenticate to AWS and set the region. Ensure this file is included in .gitignore.
 ```
 aws_region     = "aws_region"
 aws_access_key = "aws_access_key"
 aws_secret_key = "aws_secret_key"
 ```
+
+ansible - Needed to excute the playbooks on the remote host. This playbook is working with `ansible [core 2.14.3]`
+
+## Step 1 - Provisiong Infrastructure
 
 ### Run Terraform to provision the Infrastructue
 
