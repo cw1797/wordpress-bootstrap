@@ -1,4 +1,4 @@
-#otraw-wordpress-bootstrap
+# otraw-wordpress-bootstrap
 
 This repo is used to bootstrap a secure wordpress installation for the otraw-weapp.
 
