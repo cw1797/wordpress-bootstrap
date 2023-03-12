@@ -51,7 +51,7 @@ Enure the following config files have your domain specified in them `docker/otra
 Run the`ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_lemp" -e local_user=john.doe -e certbot_email=john.doe@example.com -e domain_name=domain.co.uk`
 
 
-## TODO
+## To be done
 
 - Use s3 as backend for terraform state
 
