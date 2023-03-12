@@ -57,3 +57,4 @@ Run the`ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass
 
 - Enable elasic IP for ec2 instance
 
+- Use github actions for a better gitops workflow
