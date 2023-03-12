@@ -1,0 +1,81 @@
+---  
+- name: Update yum packages
+  ansible.builtin.yum:
+    name: '*'
+    update_only: true
+    update_cache: true
+
+- name: Install Docker
+  ansible.builtin.yum:
+    name: "docker-{{ docker_version }}"
+    state: present
+
+- name: Enable and Start docker
+  ansible.builtin.systemd:
+    name: docker.service
+    state: started
+    enabled: true
+
+- name: Add the user to the docker group
+  ansible.builtin.user:
+    name: "{{ username }}"
+    group: docker
+    append: yes
+
+- name: Install docker-compose
+  ansible.builtin.uri:
+    url: "https://github.com/docker/compose/releases/download/{{docker_compose_version}}/docker-compose-linux-x86_64"
+    status_code:
+      - 200
+      - 304
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 755
+    dest: /usr/local/bin/docker-compose
+
+- name: Copy script for securing the docker daemon with TLS
+  ansible.builtin.copy:
+    src: docker_tls_certs.sh
+    dest: "/home/{{ username }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '755'
+
+- name: Execute script
+  ansible.builtin.pause:
+    prompt: "SSH to the remote host and execute the script to generate tls certs"
+
+- name: Change dir ownership of generated tls certs
+  ansible.builtin.file:
+    path: "/home/{{ username }}/.docker"
+    owner: root
+    group: root
+    recurse: yes
+  register: change_ownership_tls_dir
+
+- name: Overide docker service file with tls verification options enabled
+  ansible.builtin.copy:
+    src: override.conf
+    dest: "/etc/systemd/system/docker.service.d/"
+    owner: root
+    group: root
+    mode: '600'
+  register: override_docker_systemd
+
+- name: Restart Docker
+  ansible.builtin.systemd:
+    name: docker.service
+    daemon_reload: true
+    state: restarted
+  when: override_docker_systemd.changed
+
+- name: Copy client certificates to local machine
+  ansible.builtin.fetch:
+    src: "{{ item }}"
+    dest: ~/.docker/
+    flat: yes
+  loop: #use with_items instead of loop if ansible version is <2.5
+    - "/home/{{ username }}/.docker/ca.pem"
+    - "/home/{{ username }}/.docker/cert.pem"
+    - "/home/{{ username }}/.docker/key.pem"
+  when: change_ownership_tls_dir.changed

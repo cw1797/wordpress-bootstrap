@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    container_name: db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+    volumes: 
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: wordpress/Dockerfile
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WP_MEMORY_LIMIT=128M
+      - WP_MAX_MEMORY_LIMIT=256M
+    volumes:
+      - wordpress:/var/www/html
+    depends_on: 
+      - db
+    networks:
+      - app-network
+
+  webserver:
+    build:
+      context: .
+      dockerfile: webserver/Dockerfile
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+    depends_on:
+      - wordpress
+    networks:
+      - app-network
+
+volumes:
+  certbot-etc:
+  wordpress:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge

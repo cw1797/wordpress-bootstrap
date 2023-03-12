@@ -1,0 +1,4 @@
+---
+aws:
+  hosts:
+    docker.otraw: #entry in /etc/hosts to map to IP
