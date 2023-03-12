@@ -49,3 +49,11 @@ Once run you will have the necessary certs on your local machine used to authent
 Enure the following config files have your domain specified in them `docker/otraw-app/webserver/nginx-conf/nginx.conf` `docker/otraw-app/webserver/nginx-conf/nginx-https.conf.new`
 
 Run the`ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_lemp" -e local_user=john.doe -e certbot_email=john.doe@example.com -e domain_name=domain.co.uk`
+
+
+## TODO
+
+- Use s3 as backend for terraform state
+
+- Enable elasic IP for ec2 instance
+
