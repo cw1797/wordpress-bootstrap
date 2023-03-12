@@ -18,7 +18,7 @@ aws_secret_key = "aws_secret_key"
 
 ansible - Needed to excute the playbooks on the remote host. This playbook is working with `ansible [core 2.14.3]`
 
-.env - This file need to be located here `docker/otraw-app/.env`. It contains the sensitive environment variables so ensure it is included in both .gitignore and .dockerignore
+.env - This file need to be located here `docker/otraw-app/.env`. It contains the sensitive environment variables used by docker compose so ensure it is included in both .gitignore and .dockerignore
 ```
 MYSQL_ROOT_PASSWORD="rootpassword"
 MYSQL_USER="msqluser"
