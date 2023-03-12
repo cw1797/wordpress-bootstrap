@@ -1,4 +1,8 @@
-requests
-PyYAML
-docker
+pip==20.2.3
+requests==2.26.0
+docker==6.0.1
+docker-py==1.10.6
+docker-pycreds==0.4.0
 docker-compose
+certifi
+PyYAML
