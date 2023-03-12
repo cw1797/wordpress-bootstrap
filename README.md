@@ -18,9 +18,7 @@ aws_secret_key = "aws_secret_key"
 
 ansible - Needed to excute the playbooks on the remote host. This playbook is working with `ansible [core 2.14.3]`
 
-## Step 1 - Provisiong Infrastructure
-
-### Run Terraform to provision the Infrastructue
+### Step 1 - Provision Terraform Resources
 
 Switch to the terraform dir `cd terraform`
 
@@ -32,7 +30,13 @@ Run a plan to view desired changes 'terraform plan -var-file=secrets.tfvars'
 
 Run terraform apply to provision the infra `terraform apply -var-file=secrets.tfvars`
 
-### Step 2 - Install Docker and configure with TLS
+### Step 2 - Deploy Docker with TLS
 
-Execute the following command to configure docker with tls on the ec2 instance `ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_docker"`
+Run the following command to configure docker with tls on the ec2 instance. `ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_docker"` 
+Once run you will have the necessary certs on your local machine used to authenticate with docker in the following directory `~/.docker`
 
+### Step 3 - Deploy Wordpress with LEMP stack
+
+Enure the following config files have your domain specified in them `docker/otraw-app/webserver/nginx-conf/nginx.conf` `docker/otraw-app/webserver/nginx-conf/nginx-https.conf.new`
+
+Run the`ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_lemp" -e local_user=john.doe -e domain_name=domain.co.uk`
