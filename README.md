@@ -6,19 +6,21 @@ This repo is used to bootstrap a secure wordpress installation for the otraw-wea
 - Docker is deployed with tls enabled using Ansible to the remote EC2 instance
 - LEMP stack with nginx, mysql and wordpress docker containers deployed using docker compose via Ansible
 
-## Step 1 - Provisiong Infrastructure
-
 ### Pre-requisites
 tfwitch - Allows you to easily switch and install terrform versions `brew install tfswitch`
 
 secrets.tfvars - Contains the aws_region, aws_access_key and aws_secret_key shown below. Ensure this file is included in .gitignore.
+
+ansible - Needed to excute the playbooks on the remote host. This playbook is working with `ansible [core 2.14.3]`
+
+## Step 1 - Provisiong Infrastructure
 ```
 aws_region     = "aws_region"
 aws_access_key = "aws_access_key"
 aws_secret_key = "aws_secret_key"
 ```
 
-### Run Terraform 
+### Run Terraform to provision the Infrastructue
 
 Switch to the terraform dir `cd terraform`
 
@@ -28,4 +30,9 @@ Initialise terraform `terraform init`
 
 Run a plan to view desired changes 'terraform plan -var-file=secrets.tfvars'
 
-Run terraform apply `terraform apply -var-file=secrets.tfvars`
+Run terraform apply to provision the infra `terraform apply -var-file=secrets.tfvars`
+
+## Step 2 - Install Docker and configure with TLS
+
+Run `ansible-playbook site.yml -i inventories/inventory.yml --ask-become-pass --tags "deploy_docker"`
+
