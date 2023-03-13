@@ -33,7 +33,7 @@ Install the required terraform version (auto picks up required-version from prov
 
 Initialise terraform `terraform init`
 
-Run a plan to view desired changes 'terraform plan -var-file=secrets.tfvars'
+Run a plan to view desired changes `terraform plan -var-file=secrets.tfvars`
 
 Run terraform apply to provision the infra `terraform apply -var-file=secrets.tfvars`
 
