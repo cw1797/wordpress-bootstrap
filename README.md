@@ -46,7 +46,7 @@ Once run you will have the necessary certs on your local machine used to authent
 
 ## Step 3 - Deploy Wordpress with LEMP stack
 
-Enure the following config files have your domain specified in them:
+Ensure the following config files have your domain specified in them:
 
 - docker/otraw-app/webserver/nginx-conf/nginx.conf
 
