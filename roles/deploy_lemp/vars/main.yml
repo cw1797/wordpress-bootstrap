@@ -3,6 +3,6 @@ docker_host: "https://docker.otraw:2376"
 ca_cert: "/Users/{{ local_user }}/.docker/ca.pem"
 client_cert: "/Users/{{ local_user }}/.docker/cert.pem"
 client_key: "/Users/{{ local_user }}/.docker/key.pem"
-certbot_email: "{{ certbot_email }}"
-domain: "{{ domain }}"
+# certbot_email: "{{ certbot_email }}"
+# domain: "{{ domain }}"
 project_src: ./docker/otraw-app
