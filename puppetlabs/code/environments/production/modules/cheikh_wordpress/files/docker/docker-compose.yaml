@@ -1,0 +1,92 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: unless-stopped
+    command: ["--default-authentication-plugin=mysql_native_password"]
+    # env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_USER=user
+      - MYSQL_ROOT_PASSWORD=T3tteh4am100
+      - WORDPRESS_DB_PASSWORD=T3tteh4am100
+    volumes: 
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: /root/cw_wordpress/Dockerfile
+    container_name: wordpress
+    restart: unless-stopped
+    # env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_USER=user
+      - MYSQL_ROOT_PASSWORD=T3tteh4am100
+      - WORDPRESS_DB_PASSWORD=T3tteh4am100
+      - WP_MEMORY_LIMIT=128M
+      - WP_MAX_MEMORY_LIMIT=256M
+    volumes:
+      - wordpress:/var/www/html
+      # - ./wordpress/config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    depends_on: 
+      - db
+    networks:
+      - app-network
+
+  webserver:
+    image: nginx:1.23.3-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - wordpress:/var/www/html
+      # - certbot-etc:/etc/letsencrypt
+      - /root/cw_wordpress/nginx:/etc/nginx/conf.d
+      # - ./webserver/scripts:/app/scripts
+    # command: >
+    #   /bin/sh -c "
+    #   chmod 0755 /app/scripts/enable_ssl_and_https.sh &&
+    #   mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.old &&
+    #   nginx -g 'daemon off;'
+    #   "
+    depends_on:
+      - wordpress
+    networks:
+      - app-network
+
+  # certbot:
+  #   depends_on:
+  #     - webserver
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   volumes:
+  #     - certbot-etc:/etc/letsencrypt
+  #     - wordpress:/var/www/html
+  #   command: 
+  #     # /bin/sh -c "
+  #     # if [ ! -d '/etc/letsencrypt/live/agent.pmx.cloud' ]; then 
+  #     certbot --nginx --email cw.colai@gmail.com -d agent.pmx.cloud -d www.agent.pmx.cloud
+  #     # else 
+  #     #   echo 'Certificate already exists.';
+  #     # fi"
+
+volumes:
+  # certbot-etc:
+  wordpress:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge
+
