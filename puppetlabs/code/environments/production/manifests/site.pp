@@ -1,4 +1,4 @@
 
 node "agent.pmx.cloud" {
-  include cheikh_wordpress
+  include cheikh_webserver
 }
